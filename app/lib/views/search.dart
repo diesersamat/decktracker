@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:app/models/TorrentItem.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../network/requests.dart';
@@ -15,7 +16,7 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   late final StreamController<List<TorrentItem>> _torrentItemsStream =
       StreamController<List<TorrentItem>>();
-
+  final _scrollController = ScrollController();
   final searchController = TextEditingController();
   late Future<List<TorrentItem>> futureTorrentItem = searchTorrents("");
   Timer? _debounce;
@@ -61,8 +62,8 @@ class _SearchPageState extends State<SearchPage> {
                   child: TextField(
                     decoration: const InputDecoration(
                         border: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Colors.grey, width: 0.0)),
+                            borderSide:
+                                BorderSide(color: Colors.grey, width: 0.0)),
                         hintText: 'Type a game name to start search...'),
                     controller: searchController,
                   ))),
@@ -72,31 +73,38 @@ class _SearchPageState extends State<SearchPage> {
               stream: _torrentItemsStream.stream,
               builder: (context, snapshot) {
                 if (snapshot.hasData && snapshot.data?.isNotEmpty == true) {
-                  return GridView.count(
-                    physics: const ScrollPhysics(),
-                    mainAxisSpacing: 10,
-                    crossAxisSpacing: 10,
-                    padding: const EdgeInsets.all(20),
-                    // Create a grid with 2 columns. If you change the scrollDirection to
-                    // horizontal, this produces 2 rows.
-                    crossAxisCount:
-                        MediaQuery.of(context).size.shortestSide < 600 ? 2 : 4,
-                    // Generate 100 widgets that display their index in the List.
-                    children: List.generate(snapshot.data!.length, (index) {
-                      return Center(
-                        child: Text(
-                          '${snapshot.data![index].title}',
-                          style: Theme.of(context).textTheme.headline5,
-                        ),
-                      );
-                    }),
-                  );
+                  return Scrollbar(
+                    controller: _scrollController,
+                      scrollbarOrientation: ScrollbarOrientation.right,
+                      isAlwaysShown: true,
+                      child: GridView.count(
+                        controller: _scrollController,
+                        physics: const ScrollPhysics(),
+                        mainAxisSpacing: 10,
+                        crossAxisSpacing: 10,
+                        padding: const EdgeInsets.all(20),
+                        // Create a grid with 2 columns. If you change the scrollDirection to
+                        // horizontal, this produces 2 rows.
+                        crossAxisCount:
+                            MediaQuery.of(context).size.shortestSide < 600
+                                ? 2
+                                : 4,
+                        // Generate 100 widgets that display their index in the List.
+                        children: List.generate(snapshot.data!.length, (index) {
+                          return Center(
+                            child: Text(
+                              '${snapshot.data![index].title}',
+                              style: Theme.of(context).textTheme.headline5,
+                            ),
+                          );
+                        }),
+                      ));
                 } else if (snapshot.hasError) {
                   return Text('${snapshot.error}');
                 }
 
                 // By default, show a loading spinner.
-                return const CircularProgressIndicator();
+                return const Center(child: CircularProgressIndicator());
               },
             ),
           )

@@ -50,7 +50,7 @@ class _MainPageState extends State<MainPage> {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text("Installed"),
+          title: const Text("Deck Tracker"),
         ),
         body: Scaffold(
           body: Row(
@@ -62,7 +62,10 @@ class _MainPageState extends State<MainPage> {
                 // will shows on top of all items, it can be a logo or a Title text
                 // title: Image.asset('assets/images/easy_sidemenu.png'), //todo icon
                 // will show on bottom of SideMenu when displayMode was SideMenuDisplayMode.open
-                footer: const Text('@diesersamat'),
+                footer: const Padding(
+                  padding: EdgeInsets.all(20),
+                  child: Text('@diesersamat'),
+                ),
                 // List of SideMenuItem to show them on SideMenu
                 items: items,
                 style: SideMenuStyle(
@@ -78,6 +81,7 @@ class _MainPageState extends State<MainPage> {
               ),
               Expanded(
                 child: PageView(
+                  physics: const NeverScrollableScrollPhysics(),
                   controller: page,
                   children: const [
                     Center(
