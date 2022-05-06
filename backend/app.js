@@ -12,15 +12,14 @@ rutracker.login({ username: 'diesersamat1', password: 'Mother62' })
   .catch(err => console.error(err));
 
 
-app.listen(3000, () => {
- console.log("Server running on port 3000");
+app.listen(process.env.PORT || 3000, () => {
+ console.log("Server running.");
 });
 
 app.get("/search", (req, res, next) => {
     rutracker.search({ query: req.query.q, sort: 'size' }).then(
     torrents  => {
         var filtered = _.filter(torrents, function(torrent) { 
-            console.log(torrent.title);
             return torrent.title.includes("[P]") || torrent.title.includes("[L]");});
       res.json(filtered);  
     })
